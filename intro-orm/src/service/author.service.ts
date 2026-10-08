@@ -1,0 +1,82 @@
+import { prisma } from '../configs/prisma-client.config';
+import {
+  AuthorCreateInput,
+  AuthorUpdateInput,
+} from '../generated/prisma/models';
+
+export const createAuthorService = async ({ name }: AuthorCreateInput) => {
+  const countAuthorName = await prisma.author.count({
+    where: {
+      name,
+    },
+  });
+
+  if (countAuthorName >= 1) throw new Error('Author name already existed');
+  return await prisma.author.create({
+    data: {
+      name,
+    },
+  });
+};
+
+export const updateAuthorService = async ({ id, name }: AuthorUpdateInput) => {
+  const findId = await prisma.author.findUnique({
+    where: {
+      id: id as string,
+    },
+  });
+
+  if (!findId) throw new Error(`ID with id=${id} not found`);
+  return await prisma.author.update({
+    data: {
+      name,
+    },
+    where: { id: id as string },
+  });
+};
+
+export const deleteAuthorService = async ({ id }: AuthorUpdateInput) => {
+  return await prisma.author.update({
+    data: {
+      deletedAt: new Date(),
+    },
+    where: {
+      id: id as string,
+    },
+  });
+};
+
+export const selectAuthorService = async () => {
+  return await prisma.author.findMany({
+    where: {
+      deletedAt: null,
+    },
+  });
+};
+
+const LIMIT = 2;
+
+export const getAuthorsService = async (page: number) => {
+  const offset = (page - 1) * LIMIT;
+
+  const authors = await prisma.author.findMany({
+    where: {
+      deletedAt: null,
+    },
+    take: LIMIT,
+    skip: offset,
+    orderBy: {
+      createdAt: 'asc',
+    },
+  });
+
+  const totalAuthors = await prisma.author.count();
+
+  const totalPage = Math.ceil(totalAuthors / LIMIT);
+
+  return {
+    totalPage,
+    limit: LIMIT,
+    authors,
+  };
+};

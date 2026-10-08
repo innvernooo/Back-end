@@ -1,0 +1,116 @@
+import { Request, Response } from 'express';
+import {
+  createAuthorService,
+  deleteAuthorService,
+  getAuthorsService,
+  selectAuthorService,
+  updateAuthorService,
+} from '../service/author.service';
+
+export const createAuthorController = async (req: Request, res: Response) => {
+  try {
+    const { name } = req.body;
+
+    const author = await createAuthorService({ name });
+
+    res.status(201).json({
+      success: true,
+      message: 'Author created successfully',
+      data: author,
+    });
+  } catch (error) {
+    if (error instanceof Error)
+      return res.status(500).json({
+        success: false,
+        message: error?.message,
+        data: {},
+      });
+  }
+};
+
+export const updateAuthorController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    const author = await updateAuthorService({ id: id as string, name });
+    res.status(200).json({
+      success: true,
+      message: 'Author updated successfully',
+      data: author,
+    });
+  } catch (error) {
+    if (error instanceof Error)
+      return res.status(500).json({
+        success: false,
+        message: error?.message,
+        data: {},
+      });
+  }
+};
+
+export const deleteAuthorController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const author = await deleteAuthorService({ id: id as string });
+
+    res.status(200).json({
+      success: true,
+      message: 'Author deleted successfully',
+      data: author,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Author deleted failed',
+      data: {},
+    });
+  }
+};
+
+export const selectAuthorController = async (req: Request, res: Response) => {
+  try {
+    const author = await selectAuthorService();
+    res.status(200).json({
+      success: true,
+      message: 'Author data gotten successfully',
+      data: author,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Author data gotten failed',
+      data: {},
+    });
+  }
+};
+
+export const getAuthorsController = async (req: Request, res: Response) => {
+  try {
+    const { page } = req?.query;
+
+    const { totalPage, limit, authors } = await getAuthorsService(
+      parseInt(page as string),
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Authors retrived successfully',
+      data: {
+        authors,
+      },
+      meta: {
+        page: page,
+        limit,
+        totalPage,
+      },
+    });
+  } catch (error) {
+    if (error instanceof Error)
+      return res.status(500).json({
+        success: false,
+        message: error?.message,
+        data: {},
+      });
+  }
+};
