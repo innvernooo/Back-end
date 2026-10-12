@@ -45,15 +45,45 @@ export class BooksService {
     });
   }
 
-  static async get() {
-    return await prisma.book.findMany({
+  static async get(page: number) {
+    const LIMIT = 3;
+    const offset = (page - 1) * LIMIT;
+
+    const books = await prisma.book.findMany({
       include: {
         author: {
           select: {
             name: true,
           },
         },
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      where: {
+        deletedAt: null,
+      },
+      take: LIMIT,
+      skip: offset,
+      orderBy: {
+        createdAt: 'asc',
       },
     });
+
+    const totalBooks = await prisma.book.count({
+      where: {
+        deletedAt: null,
+      },
+    });
+
+    const totalPage = Math.ceil(totalBooks / LIMIT);
+
+    return {
+      totalPage,
+      limit: LIMIT,
+      books,
+    };
   }
 }

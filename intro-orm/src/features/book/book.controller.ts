@@ -51,12 +51,21 @@ export class BooksController {
 
   static async get(req: Request, res: Response) {
     try {
-      const book = await BooksService.get();
+      const { page = 1 } = req?.query;
+
+      const { totalPage, limit, books } = await BooksService.get(
+        parseInt(page as string),
+      );
 
       res.status(200).json({
         success: true,
         message: 'Book retirved updated successfully',
-        data: book,
+        data: books,
+        meta: {
+          page: Number(page),
+          limit,
+          totalPage,
+        },
       });
     } catch (error) {
       if (error instanceof Error)

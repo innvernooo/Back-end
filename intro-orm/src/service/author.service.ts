@@ -54,7 +54,7 @@ export const selectAuthorService = async () => {
   });
 };
 
-const LIMIT = 2;
+const LIMIT = 3;
 
 export const getAuthorsService = async (page: number) => {
   const offset = (page - 1) * LIMIT;
