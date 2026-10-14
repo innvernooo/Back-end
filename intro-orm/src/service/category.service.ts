@@ -8,3 +8,7 @@ export const createCategoryService = async (name: Categories) => {
     },
   });
 };
+
+export const getCategoryService = async () => {
+  return await prisma.category.findMany();
+};

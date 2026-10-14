@@ -87,10 +87,11 @@ export const selectAuthorController = async (req: Request, res: Response) => {
 
 export const getAuthorsController = async (req: Request, res: Response) => {
   try {
-    const { page = 1 } = req?.query;
+    const { page = 1, limit = 10 } = req?.query;
 
-    const { totalPage, limit, authors } = await getAuthorsService(
+    const { totalPage, authors } = await getAuthorsService(
       parseInt(page as string),
+      parseInt(limit as string),
     );
 
     res.status(200).json({
@@ -99,7 +100,7 @@ export const getAuthorsController = async (req: Request, res: Response) => {
       data: authors,
       meta: {
         page: Number(page),
-        limit,
+        limit: Number(limit),
         totalPage,
       },
     });

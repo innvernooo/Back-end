@@ -5,7 +5,8 @@ import { authorsRoute } from './route/author.route';
 import { booksRouter } from './features/book/book.route';
 import { categoriesRouter } from './route/category.route';
 
-const PORT: number = 8002;
+const PORT: number = parseInt(process.env.PORT!);
+const API_PREFIX: string = process.env.API_PREFIX!;
 
 const app = express();
 const corsOptions: CorsOptions = {
@@ -24,9 +25,9 @@ const corsOptions: CorsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/api/v1/authors', authorsRoute);
-app.use('/api/v1/books', booksRouter);
-app.use('/api/v1/categories', categoriesRouter);
+app.use(`${API_PREFIX}/authors`, authorsRoute);
+app.use(`${API_PREFIX}/books`, booksRouter);
+app.use(`${API_PREFIX}/categories`, categoriesRouter);
 
 /* Centralized Error */
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {

@@ -54,16 +54,14 @@ export const selectAuthorService = async () => {
   });
 };
 
-const LIMIT = 3;
-
-export const getAuthorsService = async (page: number) => {
-  const offset = (page - 1) * LIMIT;
+export const getAuthorsService = async (page: number, limit: number) => {
+  const offset = (page - 1) * limit;
 
   const authors = await prisma.author.findMany({
     where: {
       deletedAt: null,
     },
-    take: LIMIT,
+    take: limit,
     skip: offset,
     orderBy: {
       createdAt: 'asc',
@@ -72,11 +70,11 @@ export const getAuthorsService = async (page: number) => {
 
   const totalAuthors = await prisma.author.count();
 
-  const totalPage = Math.ceil(totalAuthors / LIMIT);
+  const totalPage = Math.ceil(totalAuthors / limit);
 
   return {
     totalPage,
-    limit: LIMIT,
+    limit,
     authors,
   };
 };

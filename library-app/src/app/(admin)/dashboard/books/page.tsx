@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axios-instance.lib';
 import { PaginatedApiResponse } from '../../../../../types/api-response.type';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 type Books = {
   id: string;
@@ -22,7 +23,7 @@ export default function BooksManagement() {
     isError,
     error,
   } = useQuery({
-    queryKey: ['authors'],
+    queryKey: ['books'],
     queryFn: async () => {
       const res =
         await axiosInstance.get<PaginatedApiResponse<Books[]>>('/books');
@@ -42,10 +43,10 @@ export default function BooksManagement() {
             Oversee and organize the library's books
           </p>
         </div>
-        <button className="btn bg-blue-800">
+        <Link href='/dashboard/createBooks' className="btn bg-blue-800">
           <FaPlus />
           Add New Book
-        </button>
+        </Link>
       </div>
       <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
         <table className="table">

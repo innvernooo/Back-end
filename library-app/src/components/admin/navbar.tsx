@@ -13,8 +13,8 @@ export default function Navbar() {
       </label>
       <div className='px-4 ml-auto'>
         <div className='flex items-center gap-3'>
-          <span className='text-white'>USERNAME</span>
-          <div className='w-10 h-10 bg-pink-500 rounded-full'></div>
+          <span className='text-white font-semibold'>POPCAT CARTOON</span>
+          <div className='w-10 h-10 bg-pink-500 rounded-full bg-[url(/popcat.jpg)] bg-contain'></div>
         </div>
       </div>
     </nav>
