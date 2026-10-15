@@ -1,53 +1,54 @@
+import { title } from 'node:process';
 import { prisma } from '../../configs/prisma-client.config';
 import {
   BookUncheckedCreateInput,
   BookUncheckedUpdateInput,
 } from '../../generated/prisma/models';
+import {
+  CreateBookRequest,
+  GetBookRequest,
+  UpdateBookRequest,
+} from '../../validators/books.validator';
+import { id } from 'zod/locales';
 
 export class BooksService {
-  static async create({
-    title,
-    authorId,
-    categoryId,
-  }: BookUncheckedCreateInput) {
+  static async create({ body }: CreateBookRequest) {
     return await prisma.book.create({
       data: {
-        title,
-        authorId,
-        categoryId,
+        title: body?.title,
+        authorId: body?.authorId,
+        categoryId: body?.categoryId,
       },
     });
   }
 
-  static async update({
-    id,
-    title,
-    authorId,
-    categoryId,
-  }: BookUncheckedUpdateInput) {
+  static async update({ params, body }: UpdateBookRequest) {
     const findId = await prisma.book.findUnique({
       where: {
-        id: id as string,
+        id: params?.id as string,
       },
     });
 
-    if (!findId) throw new Error(`Book with Id=${id} is not found`);
+    if (!findId) throw new Error(`Book with Id=${params?.id} is not found`);
 
     return await prisma.book.update({
       data: {
-        title,
-        authorId,
-        categoryId,
+        title: body?.title,
+        authorId: body?.authorId,
+        categoryId: body?.categoryId,
       },
       where: {
-        id: id as string,
+        id: params?.id as string,
       },
     });
+
+    return {
+      id: params?.id
+    }
   }
 
-  static async get(page: number) {
-    const LIMIT = 3;
-    const offset = (page - 1) * LIMIT;
+  static async get({ query }: GetBookRequest) {
+    const offset = (query?.page - 1) * query?.limit;
 
     const books = await prisma.book.findMany({
       include: {
@@ -65,7 +66,7 @@ export class BooksService {
       where: {
         deletedAt: null,
       },
-      take: LIMIT,
+      take: query?.limit,
       skip: offset,
       orderBy: {
         createdAt: 'asc',
@@ -78,12 +79,14 @@ export class BooksService {
       },
     });
 
-    const totalPage = Math.ceil(totalBooks / LIMIT);
+    const totalPage = Math.ceil(totalBooks / query?.limit);
 
     return {
       totalPage,
-      limit: LIMIT,
+      page: query?.page,
+      limit: query?.limit,
       books,
+      totalBooks,
     };
   }
 }

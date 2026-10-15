@@ -1,79 +1,56 @@
 import { Request, Response } from 'express';
 import { BooksService } from './book.service';
+import { validate } from '../../validators/validate';
+import {
+  createBookSchema,
+  getBookSchema,
+  updateBookSchema,
+} from '../../validators/books.validator';
 
 export class BooksController {
   static async create(req: Request, res: Response) {
-    try {
-      const { title, authorId, categoryId } = req.body;
+    const { body } = validate(createBookSchema, { body: req.body });
 
-      const book = await BooksService.create({ title, authorId, categoryId });
+    const book = await BooksService.create({ body });
 
-      res.status(201).json({
-        success: true,
-        message: 'Book created successfully',
-        data: book,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Something went wrong',
-        data: {},
-      });
-    }
+    res.status(201).json({
+      success: true,
+      message: 'Book created successfully',
+      data: book,
+    });
   }
 
   static async update(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const { title, authorId, categoryId } = req.body;
+    const { params, body } = validate(updateBookSchema, {
+      params: req.params,
+      body: req.body,
+    });
 
-      const book = await BooksService.update({
-        id: id as string,
-        title,
-        authorId,
-        categoryId,
-      });
+    const book = await BooksService.update({ params, body });
 
-      res.status(200).json({
-        success: true,
-        message: `Book with id=${id} updated successfully`,
-        data: book,
-      });
-    } catch (error) {
-      if (error instanceof Error)
-        return res.status(500).json({
-          success: false,
-          message: error?.message,
-          data: {},
-        });
-    }
+    res.status(200).json({
+      success: true,
+      message: `Book with id=${params?.id} updated successfully`,
+      data: book,
+    });
   }
 
   static async get(req: Request, res: Response) {
-    try {
-      const { page = 1 } = req?.query;
+    const { query } = validate(getBookSchema, { query: req?.query });
 
-      const { totalPage, limit, books } = await BooksService.get(
-        parseInt(page as string),
-      );
+    const { totalPage, books, page, limit, totalBooks } =
+      await BooksService.get({ query });
 
-      res.status(200).json({
-        success: true,
-        message: 'Book retirved updated successfully',
-        data: books,
-        meta: {
-          page: Number(page),
-          limit,
-          totalPage,
-        },
-      });
-    } catch (error) {
-      if (error instanceof Error)
-        return res.status(500).json({
-          success: false,
-          message: error?.message,
-          data: {},
-        });
-    }
+    res.status(200).json({
+      success: true,
+      message: 'Book retrieved updated successfully',
+      data: books,
+      meta: {
+        page: page,
+        limit: limit,
+        totalPage,
+        totalBooks,
+      },
+    });
   }
 }
