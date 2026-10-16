@@ -88,11 +88,17 @@ model Book {
   @@map("book")
 }
 
+enum Role {
+  STAFF
+  ADMIN
+}
 model Staff {
   id              String      @id @default(uuid())
   name            String      @db.VarChar(100)
   email           String      @db.VarChar(100) @unique
+  password        String?     @db.VarChar
   phoneNumber     String      @db.VarChar(15)
+  role            Role        @default(STAFF)
   branchId        String
   branch          Branch @relation(fields: [branchId], references: [id])
   createdAt       DateTime    @default(now())

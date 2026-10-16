@@ -5,7 +5,9 @@ import { authorsRoute } from './route/author.route';
 import { booksRouter } from './features/book/book.route';
 import { categoriesRouter } from './route/category.route';
 import { AppError } from './errors/app.error';
-import multer, { MulterError } from 'multer';
+import { MulterError } from 'multer';
+import { authRouter } from './features/auths/auth.route';
+import cookieParser from 'cookie-parser';
 
 const PORT: number = parseInt(process.env.PORT!);
 const API_PREFIX: string = process.env.API_PREFIX!;
@@ -27,9 +29,11 @@ const corsOptions: CorsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 app.use(`${API_PREFIX}/authors`, authorsRoute);
 app.use(`${API_PREFIX}/books`, booksRouter);
 app.use(`${API_PREFIX}/categories`, categoriesRouter);
+app.use(`${API_PREFIX}/auths`, authRouter);
 
 /* Centralized Error */
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {

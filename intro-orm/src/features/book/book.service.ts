@@ -19,7 +19,7 @@ export class BooksService {
       },
     });
 
-    if (!findBookTitle) throw new AppError(409, 'Book title already existed');
+    if (findBookTitle) throw new AppError(409, 'Book title already existed');
 
     const filePath = files[0]?.path?.split('\\').slice(-3).join('/');
 

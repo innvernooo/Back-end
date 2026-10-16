@@ -38,7 +38,7 @@ export function uploadMiddleware(
     const fileExtention = file?.originalname?.split('.').pop();
 
     if (!allowedExtention.includes(fileExtention!))
-      cb(new AppError(415, 'File extension not allowed'));
+      return cb(new AppError(415, 'File extension not allowed'));
     cb(null, true);
   }
 
