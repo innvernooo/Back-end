@@ -1,23 +1,34 @@
 import { title } from 'node:process';
 import { prisma } from '../../configs/prisma-client.config';
 import {
-  BookUncheckedCreateInput,
-  BookUncheckedUpdateInput,
-} from '../../generated/prisma/models';
-import {
   CreateBookRequest,
+  DeleteBookRequest,
   GetBookRequest,
   UpdateBookRequest,
 } from '../../validators/books.validator';
-import { id } from 'zod/locales';
+import { AppError } from '../../errors/app.error';
 
 export class BooksService {
-  static async create({ body }: CreateBookRequest) {
+  static async create(
+    { body }: CreateBookRequest,
+    files: Express.Multer.File[],
+  ) {
+    const findBookTitle = await prisma.book.findFirst({
+      where: {
+        title,
+      },
+    });
+
+    if (!findBookTitle) throw new AppError(409, 'Book title already existed');
+
+    const filePath = files[0]?.path?.split('\\').slice(-3).join('/');
+
     return await prisma.book.create({
       data: {
         title: body?.title,
         authorId: body?.authorId,
         categoryId: body?.categoryId,
+        coverImageUrl: filePath,
       },
     });
   }
@@ -43,8 +54,8 @@ export class BooksService {
     });
 
     return {
-      id: params?.id
-    }
+      id: params?.id,
+    };
   }
 
   static async get({ query }: GetBookRequest) {
@@ -87,6 +98,19 @@ export class BooksService {
       limit: query?.limit,
       books,
       totalBooks,
+    };
+  }
+
+  static async delete({ params }: DeleteBookRequest) {
+    const books = await prisma.book.delete({
+      where: {
+        id: params?.id,
+      },
+    });
+
+    return {
+      books,
+      id: params?.id,
     };
   }
 }

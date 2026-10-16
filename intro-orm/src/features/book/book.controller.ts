@@ -3,15 +3,21 @@ import { BooksService } from './book.service';
 import { validate } from '../../validators/validate';
 import {
   createBookSchema,
+  deleteBookSchema,
   getBookSchema,
   updateBookSchema,
 } from '../../validators/books.validator';
 
 export class BooksController {
   static async create(req: Request, res: Response) {
+    const files: Express.Multer.File[] =
+      (
+        req.files as { [filename: string]: Express.Multer.File[] } | undefined
+      )?.['coverImage'] ?? [];
+
     const { body } = validate(createBookSchema, { body: req.body });
 
-    const book = await BooksService.create({ body });
+    const book = await BooksService.create({ body }, files);
 
     res.status(201).json({
       success: true,
@@ -43,7 +49,7 @@ export class BooksController {
 
     res.status(200).json({
       success: true,
-      message: 'Book retrieved updated successfully',
+      message: 'Book retrieved successfully',
       data: books,
       meta: {
         page: page,
@@ -51,6 +57,18 @@ export class BooksController {
         totalPage,
         totalBooks,
       },
+    });
+  }
+
+  static async delete(req: Request, res: Response) {
+    const { params } = validate(deleteBookSchema, { params: req.params });
+
+    const { books } = await BooksService.delete({ params });
+
+    res.status(200).json({
+      success: true,
+      message: `Book deleted successfully`,
+      data: books,
     });
   }
 }

@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axios-instance.lib';
 import {
-  NewBookRequest,
+  NewBookInput,
+  NewBookOutput,
   NewBookSchema,
 } from '@/features/newBook/validation/newBookSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,13 +19,20 @@ export default function CreateBooks() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<NewBookRequest>({
+  } = useForm<NewBookInput, unknown, NewBookOutput>({
     resolver: zodResolver(NewBookSchema),
   });
 
   const handleCreateBook = useMutation({
-    mutationFn: async (data: NewBookRequest) => {
-      const res = await axiosInstance.post('/books', data);
+    mutationFn: async (data: NewBookOutput) => {
+      console.log(data);
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('authorId', data.authorId);
+      formData.append('categoryId', data.categoryId);
+      formData.append('coverImage', data.cover[0]);
+
+      const res = await axiosInstance.post('/books', formData);
       return res?.data;
     },
     onSuccess: () => {
@@ -84,11 +92,13 @@ export default function CreateBooks() {
         <fieldset className="fieldset">
           <legend className="fieldset-legend">AUTHOR ID</legend>
           <select
-            defaultValue="Pick an Author"
+            defaultValue=""
             className="select w-full bg-white text-black"
             {...register('authorId')}
           >
-            <option disabled={true}>Pick an Author</option>
+            <option value="" disabled={true}>
+              Pick an Author
+            </option>
             {authorsData?.map((author: any, index: number) => (
               <option key={index} value={author?.id}>
                 {author?.name}
@@ -100,11 +110,13 @@ export default function CreateBooks() {
         <fieldset className="fieldset">
           <legend className="fieldset-legend">CATEGORY ID</legend>
           <select
-            defaultValue="Pick a Category"
+            defaultValue=""
             className="select w-full bg-white text-black"
             {...register('categoryId')}
           >
-            <option disabled={true}>Pick a Category</option>
+            <option value="" disabled={true}>
+              Pick a Category
+            </option>
             {categoryData?.map((category: any, index: number) => (
               <option key={index} value={category?.id}>
                 {category?.name}
@@ -112,6 +124,18 @@ export default function CreateBooks() {
             ))}
           </select>
           <span className="label">{errors?.categoryId?.message}</span>
+        </fieldset>
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">PICK A BOOK COVER IMAGE</legend>
+          <input
+            type="file"
+            className="file-input bg-white text-black"
+            {...register('cover')}
+          />
+          <label className="label">
+            Max size 5MB | Must be .jpg / .jpeg / .png / .webp / .svg
+            {errors?.cover?.message}
+          </label>
         </fieldset>
         <div className="flex justify-end">
           <button

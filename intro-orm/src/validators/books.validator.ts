@@ -44,6 +44,16 @@ export const updateBookSchema = z.object({
   }),
 });
 
+export const deleteBookSchema = z.object({
+  params: z.object({
+    id: z
+      .string()
+      .min(10, 'Id is required')
+      .max(60, 'Id has maximum 60 characters'),
+  }),
+});
+
 export type CreateBookRequest = z.infer<typeof createBookSchema>;
 export type GetBookRequest = z.infer<typeof getBookSchema>;
 export type UpdateBookRequest = z.infer<typeof updateBookSchema>;
+export type DeleteBookRequest = z.infer<typeof deleteBookSchema>
