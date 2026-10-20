@@ -1,0 +1,6 @@
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('UNVERIFIED', 'VERIFIED');
+
+-- AlterTable
+ALTER TABLE "staff" ADD COLUMN     "status" "Status" NOT NULL DEFAULT 'UNVERIFIED',
+ALTER COLUMN "password" SET DEFAULT 'ABC12345';

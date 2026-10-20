@@ -88,6 +88,11 @@ model Book {
   @@map("book")
 }
 
+
+enum Status {
+  UNVERIFIED
+  VERIFIED
+}
 enum Role {
   STAFF
   ADMIN
@@ -96,9 +101,10 @@ model Staff {
   id              String      @id @default(uuid())
   name            String      @db.VarChar(100)
   email           String      @db.VarChar(100) @unique
-  password        String?     @db.VarChar
+  password        String?     @db.VarChar @default("ABC12345")
   phoneNumber     String      @db.VarChar(15)
   role            Role        @default(STAFF)
+  status          Status      @default(UNVERIFIED)
   branchId        String
   branch          Branch @relation(fields: [branchId], references: [id])
   createdAt       DateTime    @default(now())

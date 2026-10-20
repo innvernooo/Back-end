@@ -3,7 +3,7 @@
 import { FaPlus } from 'react-icons/fa';
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axios-instance.lib';
-import { PaginatedApiResponse } from '../../../../../types/api-response.type';
+import { PaginatedApiResponse } from '../../../../types/api-response.type';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
@@ -43,7 +43,7 @@ export default function BooksManagement() {
             Oversee and organize the library's books
           </p>
         </div>
-        <Link href='/dashboard/createBooks' className="btn bg-blue-800">
+        <Link href="/dashboard/createBooks" className="btn bg-blue-800">
           <FaPlus />
           Add New Book
         </Link>

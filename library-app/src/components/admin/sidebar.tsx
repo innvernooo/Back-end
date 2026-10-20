@@ -1,6 +1,7 @@
+import Link from 'next/link';
 import { RiHome9Line } from 'react-icons/ri';
 import { RiIdCardLine } from 'react-icons/ri';
-import { TfiWrite } from "react-icons/tfi";
+import { TfiWrite } from 'react-icons/tfi';
 export default function Sidebar() {
   return (
     <>
@@ -15,22 +16,24 @@ export default function Sidebar() {
       </div>
       <ul className="menu w-full grow flex flex-col gap-3">
         <li>
-          <button
+          <Link
+            href={'/dashboard/books'}
             className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
             data-tip="Homepage"
           >
             <RiHome9Line className="text-xl" />
             <span className="is-drawer-close:hidden">Homepage</span>
-          </button>
+          </Link>
         </li>
         <li>
-          <button
+          <Link
+            href={'/dashboard/staff'}
             className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
             data-tip="Settings"
           >
             <RiIdCardLine className="text-xl" />
             <span className="is-drawer-close:hidden">Employees</span>
-          </button>
+          </Link>
         </li>
         <li>
           <button
@@ -40,6 +43,16 @@ export default function Sidebar() {
             <TfiWrite className="text-xl" />
             <span className="is-drawer-close:hidden">Author</span>
           </button>
+        </li>
+        <li>
+          <Link
+            href={'/dashboard/createBooks'}
+            className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+            data-tip="Settings"
+          >
+            <TfiWrite className="text-xl" />
+            <span className="is-drawer-close:hidden">Books</span>
+          </Link>
         </li>
       </ul>
     </>

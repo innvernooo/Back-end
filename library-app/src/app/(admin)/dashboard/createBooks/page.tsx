@@ -10,8 +10,9 @@ import {
   NewBookSchema,
 } from '@/features/newBook/validation/newBookSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import withAuthGuard from '@/hoc/withAuthGuard';
 
-export default function CreateBooks() {
+function CreateBooks() {
   const queryClient = useQueryClient();
 
   const {
@@ -149,3 +150,5 @@ export default function CreateBooks() {
     </>
   );
 }
+
+export default withAuthGuard(CreateBooks, ['ADMIN']);

@@ -3,7 +3,7 @@
 import { FaPlus } from 'react-icons/fa';
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@/lib/axios-instance.lib';
-import { PaginatedApiResponse } from '../../../../../types/api-response.type';
+import { PaginatedApiResponse } from '../../../../types/api-response.type';
 
 type Author = {
   id: string;

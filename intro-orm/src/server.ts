@@ -25,6 +25,7 @@ const corsOptions: CorsOptions = {
 
     return callback(null, true);
   },
+  credentials: true,
 };
 
 app.use(cors(corsOptions));

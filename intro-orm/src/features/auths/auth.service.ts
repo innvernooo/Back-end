@@ -3,8 +3,14 @@ import { prisma } from '../../configs/prisma-client.config';
 import { AppError } from '../../errors/app.error';
 import { Bcrypt } from '../../lib/bcrypt.lib';
 import { Jwt } from '../../lib/jwt.lib';
-import { LoginInput, RegisterInput } from '../../validators/auth.validator';
+import {
+  LoginInput,
+  RegisterInput,
+  StaffregisterInput,
+  StaffregisterOutput,
+} from '../../validators/auth.validator';
 import bcrypt from 'bcryptjs';
+import transporter from '../../lib/transporter.lib';
 
 export class AuthService {
   static async register({ body }: RegisterInput) {
@@ -17,6 +23,11 @@ export class AuthService {
     if (findStaffByEmail) throw new AppError(409, 'Email already existed');
 
     // const passwordHashed = await Bcrypt.hashPassword(body?.password);
+    await transporter.sendMail({
+      to: body?.email,
+      subject: 'Welcome New User',
+      html: '<h4>Hey there, welcome!</h4>',
+    });
 
     const staff = await prisma.staff.create({
       data: {
@@ -46,7 +57,7 @@ export class AuthService {
       body?.password,
       findStaffByEmail?.password!,
     );
-    console.log(isComparredPassword)
+    console.log(isComparredPassword);
 
     if (!isComparredPassword)
       throw new AppError(404, 'Email or password is incorrect');
@@ -67,5 +78,43 @@ export class AuthService {
       token,
       safeStaff,
     };
+  }
+  static async me(id: string) {
+    return await prisma.staff.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+  }
+
+  static async staffRegister({ body }: StaffregisterOutput) {
+    const findStaffByEmail = await prisma.staff.findUnique({
+      where: {
+        email: body?.email,
+      },
+    });
+
+    if (findStaffByEmail) throw new AppError(409, 'Email already existed');
+
+    await transporter.sendMail({
+      to: body?.email,
+      subject: 'Welcome New User',
+      html: '<h4>Hey there, welcome!</h4>',
+    });
+
+    return await prisma.staff.create({
+      data: {
+        ...body,
+      },
+      omit: {
+        password: true,
+        phoneNumber: true,
+      },
+    });
   }
 }
